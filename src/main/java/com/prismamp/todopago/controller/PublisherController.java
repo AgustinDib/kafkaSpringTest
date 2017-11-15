@@ -1,4 +1,4 @@
-package com.kafka.controller;
+package com.prismamp.todopago.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kafka.service.PublisherService;
+import com.prismamp.todopago.service.PublisherService;
 
 @RestController
 public class PublisherController {

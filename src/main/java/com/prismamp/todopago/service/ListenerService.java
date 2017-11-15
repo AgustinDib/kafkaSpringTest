@@ -1,4 +1,4 @@
-package com.kafka.service;
+package com.prismamp.todopago.service;
 
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;

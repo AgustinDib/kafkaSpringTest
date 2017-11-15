@@ -9,6 +9,16 @@
 	<packaging>jar</packaging>
 
 	<name>kafkaConnection</name>
+	<repositories>
+		<repository>
+			<id>redbee-snapshot</id>
+			<name>redbee-snapshot</name>
+			<url>http://nexus.redb.ee/content/repositories/redbee-snapshot/</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 	<description>Demo project for connection with Kafka</description>
 
 	<parent>
@@ -42,6 +52,16 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.prismamp.todopago</groupId>
+			<artifactId>rest-client</artifactId>
+			<version>0.0.13-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.prismamp.todopago</groupId>
+			<artifactId>bsacommons</artifactId>
+			<version>2.5.2-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 

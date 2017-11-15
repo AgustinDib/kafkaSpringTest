@@ -1,4 +1,4 @@
-package com.kafka.config;
+package com.prismamp.todopago.config;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,7 +14,7 @@ import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 
-import com.kafka.service.ListenerService;
+import com.prismamp.todopago.service.ListenerService;
 
 @EnableKafka
 @Configuration

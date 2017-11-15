@@ -1,4 +1,4 @@
-package com.kafka.config;
+package com.prismamp.todopago.config;
 
 import java.util.HashMap;
 import java.util.Map;

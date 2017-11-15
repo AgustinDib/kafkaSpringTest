@@ -1,4 +1,4 @@
-package com.kafka;
+package com.prismamp.todopago;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
