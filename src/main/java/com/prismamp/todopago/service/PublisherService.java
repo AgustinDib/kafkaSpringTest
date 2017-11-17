@@ -4,15 +4,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import com.prismamp.todopago.model.Greeting;
+
 @Service
 public class PublisherService {
 
 	@Autowired
 	private KafkaTemplate<String, String> kafkaTemplate;
 
-	private String topicName = "kafkaTest";
+	@Autowired
+	private KafkaTemplate<String, Greeting> greetingKafkaTemplate;
 
 	public void sendMessage(String msg) {
-		kafkaTemplate.send(topicName, msg);
+		kafkaTemplate.send("kafkaMessage", msg);
+	}
+
+	public void sendGreeting(Greeting greeting) {
+		greetingKafkaTemplate.send("kafkaGreeting", greeting);
 	}
 }
