@@ -14,4 +14,4 @@ Para iniciar el Kafka en windows, dentro de la carpeta de kafka ingresar el sigu
 bin\windows\kafka-server-start.bat config/server.properties
 
 Para crear el topic donde se guardan y leen los mensajes, ejecutar:
-bin\windows\kafka-topics.bat --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic kafkaTest
+bin\windows\kafka-topics.bat --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic topicName
