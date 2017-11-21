@@ -25,6 +25,6 @@ public class CargoRepository {
 	}
 
 	private List<Cargo> createCargos() {
-		return Arrays.asList(new Cargo(1l), new Cargo(2l));
+		return Arrays.asList(new Cargo(), new Cargo());
 	}
 }

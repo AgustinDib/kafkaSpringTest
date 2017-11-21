@@ -4,8 +4,27 @@ public class Cargo {
 
 	private Long id;
 
-	public Cargo(Long id) {
+	private TipoCargo tipoCargo;
+
+	private TipoMedioPago tipoMedioPago;
+
+	private Long idTipoCuenta;
+
+	private Long idBaseCalculo;
+
+	private CanalAdhesion canalAdhesion;
+
+	public Cargo() {
+	}
+
+	public Cargo(Long id, TipoCargo tipoCargo, TipoMedioPago tipoMedioPago, Long idTipoCuenta, Long idBaseCalculo,
+			CanalAdhesion canalAdhesion) {
 		this.id = id;
+		this.tipoCargo = tipoCargo;
+		this.tipoMedioPago = tipoMedioPago;
+		this.idTipoCuenta = idTipoCuenta;
+		this.idBaseCalculo = idBaseCalculo;
+		this.canalAdhesion = canalAdhesion;
 	}
 
 	public Long getId() {
@@ -14,5 +33,45 @@ public class Cargo {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public TipoCargo getTipoCargo() {
+		return tipoCargo;
+	}
+
+	public void setTipoCargo(TipoCargo tipoCargo) {
+		this.tipoCargo = tipoCargo;
+	}
+
+	public TipoMedioPago getTipoMedioPago() {
+		return tipoMedioPago;
+	}
+
+	public void setTipoMedioPago(TipoMedioPago tipoMedioPago) {
+		this.tipoMedioPago = tipoMedioPago;
+	}
+
+	public Long getIdTipoCuenta() {
+		return idTipoCuenta;
+	}
+
+	public void setIdTipoCuenta(Long idTipoCuenta) {
+		this.idTipoCuenta = idTipoCuenta;
+	}
+
+	public Long getIdBaseCalculo() {
+		return idBaseCalculo;
+	}
+
+	public void setIdBaseCalculo(Long idBaseCalculo) {
+		this.idBaseCalculo = idBaseCalculo;
+	}
+
+	public CanalAdhesion getCanalAdhesion() {
+		return canalAdhesion;
+	}
+
+	public void setCanalAdhesion(CanalAdhesion canalAdhesion) {
+		this.canalAdhesion = canalAdhesion;
 	}
 }
