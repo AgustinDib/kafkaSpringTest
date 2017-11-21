@@ -14,19 +14,6 @@ public class Cargo {
 
 	private CanalAdhesion canalAdhesion;
 
-	public Cargo() {
-	}
-
-	public Cargo(Long id, TipoCargo tipoCargo, TipoMedioPago tipoMedioPago, Long idTipoCuenta, Long idBaseCalculo,
-			CanalAdhesion canalAdhesion) {
-		this.id = id;
-		this.tipoCargo = tipoCargo;
-		this.tipoMedioPago = tipoMedioPago;
-		this.idTipoCuenta = idTipoCuenta;
-		this.idBaseCalculo = idBaseCalculo;
-		this.canalAdhesion = canalAdhesion;
-	}
-
 	public Long getId() {
 		return id;
 	}

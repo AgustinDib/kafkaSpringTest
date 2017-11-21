@@ -8,15 +8,6 @@ public class Tipo {
 
 	private String descripcion;
 
-	public Tipo() {
-	}
-
-	public Tipo(Long id, String codigo, String descripcion) {
-		this.id = id;
-		this.codigo = codigo;
-		this.descripcion = descripcion;
-	}
-
 	public Long getId() {
 		return id;
 	}

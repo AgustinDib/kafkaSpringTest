@@ -12,18 +12,6 @@ public class CanalAdhesion {
 
 	private Boolean permiteDevolucion;
 
-	public CanalAdhesion() {
-	}
-
-	public CanalAdhesion(Long id, String nombre, String nivelRiesgo, Boolean permitePromocion,
-			Boolean permiteDevolucion) {
-		this.id = id;
-		this.nombre = nombre;
-		this.nivelRiesgo = nivelRiesgo;
-		this.permitePromocion = permitePromocion;
-		this.permiteDevolucion = permiteDevolucion;
-	}
-
 	public Long getId() {
 		return id;
 	}

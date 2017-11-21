@@ -20,22 +20,6 @@ public class TipoMedioPago {
 
 	private Boolean permitidoBilletera;
 
-	public TipoMedioPago() {
-	}
-
-	public TipoMedioPago(Long id, String codigo, String nombre, Boolean permiteAnulacion, Boolean permiteDevolucion,
-			Integer plazoDevolucion, Boolean operaCuotas, Boolean permiteContracargo, Boolean permitidoBilletera) {
-		this.id = id;
-		this.codigo = codigo;
-		this.nombre = nombre;
-		this.permiteAnulacion = permiteAnulacion;
-		this.permiteDevolucion = permiteDevolucion;
-		this.plazoDevolucion = plazoDevolucion;
-		this.operaCuotas = operaCuotas;
-		this.permiteContracargo = permiteContracargo;
-		this.permitidoBilletera = permitidoBilletera;
-	}
-
 	public Long getId() {
 		return id;
 	}

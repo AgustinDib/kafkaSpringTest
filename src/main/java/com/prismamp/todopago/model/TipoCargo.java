@@ -14,19 +14,6 @@ public class TipoCargo {
 
 	private Boolean aplicaIva;
 
-	public TipoCargo() {
-	}
-
-	public TipoCargo(Long id, String codigo, String descripcion, String signo, Boolean configuraPanel,
-			Boolean aplicaIva) {
-		this.id = id;
-		this.codigo = codigo;
-		this.descripcion = descripcion;
-		this.signo = signo;
-		this.configuraPanel = configuraPanel;
-		this.aplicaIva = aplicaIva;
-	}
-
 	public Long getId() {
 		return id;
 	}
