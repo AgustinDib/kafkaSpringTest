@@ -10,6 +10,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Repository;
 
 import com.prismamp.todopago.model.Cargo;
+import com.prismamp.todopago.model.CargoCuenta;
 
 @Repository
 public class CargoRepository {
@@ -29,5 +30,9 @@ public class CargoRepository {
 		return findAll().stream().filter(p -> p.getIdTipoCuenta().equals(tipoCuenta))
 				.filter(p -> p.getTipoMedioPago().getId().equals(tipoMedioPago))
 				.filter(p -> p.getIdBaseCalculo().equals(baseCalculo)).collect(Collectors.toList());
+	}
+
+	public CargoCuenta findCargoCuenta(Long cargo, Long cuenta) {
+		throw new NotImplementedException();
 	}
 }
