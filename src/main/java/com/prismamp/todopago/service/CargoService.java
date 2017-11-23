@@ -32,9 +32,9 @@ public class CargoService {
 
 				if (!calculator.isCostoFinanciero(cargo)) {
 					CargoCuenta cargoCuenta = repository.findCargoCuenta(cargo.getId(), transaccion.getCuentaId());
-					cargoTransaccion = calculator.calculateRelacionVigente(cargoCuenta, cargo);
 
-					// Sigue el proceso...
+					cargoTransaccion = calculator.calculateRelacionVigente(cargoCuenta, cargo, cargoTransaccion);
+					cargoTransaccion = calculator.calculateMonto(cargoTransaccion, cargo, transaccion.getImporte());
 				} else {
 
 				}

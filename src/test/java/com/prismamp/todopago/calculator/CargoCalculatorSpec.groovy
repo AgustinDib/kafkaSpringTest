@@ -4,6 +4,7 @@ import com.prismamp.todopago.exceptions.BusinessException
 import com.prismamp.todopago.model.Cargo
 import com.prismamp.todopago.model.CargoCuenta
 import com.prismamp.todopago.model.CargoTransaccion
+import com.prismamp.todopago.model.Tipo
 import com.prismamp.todopago.model.TipoCargo
 import com.prismamp.todopago.model.Valor
 import spock.lang.Specification
@@ -40,7 +41,7 @@ class CargoCalculatorSpec extends Specification {
     def "Se calcula la vigencia de una relación con un Cargo o un CargoCuenta con valor null"() {
 
         when: "Se quiere calcular la vigencia de una relación"
-        calculator.calculateRelacionVigente(cargoCuenta, cargo)
+        calculator.calculateRelacionVigente(cargoCuenta, cargo, null)
 
         then: "Se tira BusinessException"
         thrown(expectedException)
@@ -54,14 +55,14 @@ class CargoCalculatorSpec extends Specification {
     def "Se calcula la vigencia de una relación con fechas vigentes y no vigentes"() {
 
         given: "Un Cargo con Valor"
-        Cargo cargo = new Cargo(valor: new Valor(valor: 100, idTipoAplicacion: 666))
+        Cargo cargo = new Cargo(valor: new Valor(valor: 100, tipo: new Tipo(id: 666)))
 
         when: "Se calcula la relación para una fecha vigente"
         Date inicio = new Date(System.currentTimeMillis() - 3600 * 1000)
         Date fin = new Date(System.currentTimeMillis() + 3600 * 1000)
         CargoCuenta cargoCuenta = new CargoCuenta(valor: 50, idTipoAplicacion: 333, inicioVigencia: inicio, finVigencia: fin)
 
-        CargoTransaccion cargoTransaccion = calculator.calculateRelacionVigente(cargoCuenta, cargo)
+        CargoTransaccion cargoTransaccion = calculator.calculateRelacionVigente(cargoCuenta, cargo, null)
 
         then: "El Valor y el ID del tipo de aplicación se toman del CargoCuenta"
         cargoTransaccion.idTipoAplicacion == 333 && cargoTransaccion.valorAplicado == 50
@@ -71,9 +72,24 @@ class CargoCalculatorSpec extends Specification {
         fin = new Date(System.currentTimeMillis() - 3600 * 1000)
         cargoCuenta = new CargoCuenta(valor: 50, idTipoAplicacion: 333, inicioVigencia: inicio, finVigencia: fin)
 
-        cargoTransaccion = calculator.calculateRelacionVigente(cargoCuenta, cargo)
+        cargoTransaccion = calculator.calculateRelacionVigente(cargoCuenta, cargo, null)
 
         then: "El Valor y el ID del tipo de aplicación se toman del Cargo"
         cargoTransaccion.idTipoAplicacion == 666 && cargoTransaccion.valorAplicado == 100
+    }
+
+    def "Se calcula el monto de un Cargo con valores null y se tira una BusinessException"() {
+
+        when: "Se calcula el monto de un Cargo"
+        calculator.calculateMonto(null, cargo, 0)
+
+        then: "Se tira BusinessException"
+        thrown(expectedException)
+
+        where:
+        cargo                                                     | expectedException
+        null                                                      | BusinessException
+        new Cargo(valor: null)                                    | BusinessException
+        new Cargo(valor: new Valor(tipo: new Tipo(codigo: "XXX")))| BusinessException
     }
 }

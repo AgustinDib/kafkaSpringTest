@@ -21,28 +21,52 @@ public class CargoCalculator {
 		}
 	}
 
-	public CargoTransaccion calculateRelacionVigente(CargoCuenta cargoCuenta, Cargo cargo) {
-		if (null != cargoCuenta && null != cargo) {
-			CargoTransaccion result = new CargoTransaccion();
+	public CargoTransaccion calculateRelacionVigente(CargoCuenta cargoCuenta, Cargo cargo,
+			CargoTransaccion cargoTransaccion) {
 
+		if (null != cargoCuenta && null != cargo) {
+			if (null == cargoTransaccion) {
+				cargoTransaccion = new CargoTransaccion();
+			}
 			if (isRelacionVigente(cargoCuenta)) {
-				result.setValorAplicado(cargoCuenta.getValor());
-				result.setIdTipoAplicacion(cargoCuenta.getIdTipoAplicacion());
+				cargoTransaccion.setValorAplicado(cargoCuenta.getValor());
+				cargoTransaccion.setIdTipoAplicacion(cargoCuenta.getIdTipoAplicacion());
 			} else {
 				Valor valor = cargo.getValor();
 
 				if (null != valor) {
-					result.setValorAplicado(valor.getValor());
-					result.setIdTipoAplicacion(valor.getIdTipoAplicacion());
+					cargoTransaccion.setValorAplicado(valor.getValor());
+					cargoTransaccion.setIdTipoAplicacion(valor.getTipo().getId());
 				} else {
 					throw new BusinessException("No se puede calcular el Valor a partir del Cargo.");
 				}
 			}
 
-			return result;
+			return cargoTransaccion;
 		} else {
 			throw new BusinessException("No se puede calcular si el CargoCuenta tiene relación vigente.");
 		}
+	}
+
+	public CargoTransaccion calculateMonto(CargoTransaccion cargoTransaccion, Cargo cargo, Double importe) {
+		if (null != cargo && null != cargo.getValor()) {
+
+			if (null == cargoTransaccion) {
+				cargoTransaccion = new CargoTransaccion();
+			}
+
+			if ("AP_PORCENTAJE".equalsIgnoreCase(cargo.getValor().getTipo().getCodigo())) {
+				cargoTransaccion.setMontoCalculado(importe * (cargo.getValor().getValor() / 100));
+			} else if ("AP_FIJO".equalsIgnoreCase(cargo.getValor().getTipo().getCodigo())) {
+				cargoTransaccion.setMontoCalculado(cargo.getValor().getValor());
+			} else {
+				throw new BusinessException("No se puede calcular el monto, el código de aplicación no es válido.");
+			}
+
+		} else {
+			throw new BusinessException("No se puede calcular el monto ya que el código de aplicación no es válido.");
+		}
+		return cargoTransaccion;
 	}
 
 	private boolean isRelacionVigente(CargoCuenta cargoCuenta) {

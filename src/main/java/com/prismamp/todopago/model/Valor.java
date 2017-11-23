@@ -2,17 +2,9 @@ package com.prismamp.todopago.model;
 
 public class Valor {
 
-	private Long idTipoAplicacion;
-
 	private Double valor;
 
-	public Long getIdTipoAplicacion() {
-		return idTipoAplicacion;
-	}
-
-	public void setIdTipoAplicacion(Long idTipoAplicacion) {
-		this.idTipoAplicacion = idTipoAplicacion;
-	}
+	private Tipo tipo;
 
 	public Double getValor() {
 		return valor;
@@ -20,5 +12,13 @@ public class Valor {
 
 	public void setValor(Double valor) {
 		this.valor = valor;
+	}
+
+	public Tipo getTipo() {
+		return tipo;
+	}
+
+	public void setTipo(Tipo tipo) {
+		this.tipo = tipo;
 	}
 }

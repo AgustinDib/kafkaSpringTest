@@ -15,6 +15,8 @@ public class Transaccion {
 
 	private Long idBaseCalculo;
 
+	private Double importe;
+
 	private List<CargoTransaccion> cargos;
 
 	public Transaccion() {
@@ -59,6 +61,14 @@ public class Transaccion {
 
 	public void setIdBaseCalculo(Long idBaseCalculo) {
 		this.idBaseCalculo = idBaseCalculo;
+	}
+
+	public Double getImporte() {
+		return importe;
+	}
+
+	public void setImporte(Double importe) {
+		this.importe = importe;
 	}
 
 	public List<CargoTransaccion> getCargos() {
