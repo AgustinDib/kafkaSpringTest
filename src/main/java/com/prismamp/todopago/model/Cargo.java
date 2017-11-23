@@ -14,6 +14,8 @@ public class Cargo {
 
 	private CanalAdhesion canalAdhesion;
 
+	private Valor valor;
+
 	public Long getId() {
 		return id;
 	}
@@ -60,5 +62,13 @@ public class Cargo {
 
 	public void setCanalAdhesion(CanalAdhesion canalAdhesion) {
 		this.canalAdhesion = canalAdhesion;
+	}
+
+	public Valor getValor() {
+		return valor;
+	}
+
+	public void setValor(Valor valor) {
+		this.valor = valor;
 	}
 }
