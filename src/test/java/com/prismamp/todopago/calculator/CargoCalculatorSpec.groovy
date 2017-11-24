@@ -4,6 +4,7 @@ import com.prismamp.todopago.exceptions.BusinessException
 import com.prismamp.todopago.model.Cargo
 import com.prismamp.todopago.model.CargoCuenta
 import com.prismamp.todopago.model.CargoTransaccion
+import com.prismamp.todopago.model.ReglaBonificacion
 import com.prismamp.todopago.model.Tipo
 import com.prismamp.todopago.model.TipoCargo
 import com.prismamp.todopago.model.Valor
@@ -91,5 +92,111 @@ class CargoCalculatorSpec extends Specification {
         null                                                      | BusinessException
         new Cargo(valor: null)                                    | BusinessException
         new Cargo(valor: new Valor(tipo: new Tipo(codigo: "XXX")))| BusinessException
+    }
+
+    def "Se calcula el monto de un Cargo fijo y por porcentaje"() {
+
+        given: "Un Cargo con Valor con Tipo sin código"
+        Cargo cargo = new Cargo(valor: new Valor(valor: 300, tipo: new Tipo()))
+
+        when: "Se calcula el monto de un cargo fijo"
+        cargo.valor.tipo.codigo = "AP_FIJO"
+        CargoTransaccion cargoTransaccion = calculator.calculateMonto(null, cargo, 200)
+
+        then: "El monto se obtiene directamente del Valor"
+        cargoTransaccion.montoCalculado == 300
+
+        when: "Se calcula el monto de un cargo por porcentaje"
+        cargo.valor.tipo.codigo = "AP_PORCENTAJE"
+        cargoTransaccion = calculator.calculateMonto(null, cargo, 200)
+
+        then: "El monto se obtiene a través de la fórmula importe * (valor/100)"
+        cargoTransaccion.montoCalculado == 600
+    }
+
+    def "Se calcular un costo financiero para tasa no directa con valores negativos y se tira una BusinessException"() {
+
+        when: "Se costo financiero"
+        calculator.calculateCostoFinanciero(null, importe, tasa, bonificacion, null)
+
+        then: "Se tira BusinessException"
+        thrown(expectedException)
+
+        where:
+        importe | tasa  | bonificacion  | expectedException
+        2       | 5     | -5            | BusinessException
+        -2      | 5     | 5             | BusinessException
+        2       | -5    | 5             | BusinessException
+        -2      | -5    | -5            | BusinessException
+    }
+
+    def "Se calcula un costo financiero para tasa no directa con valores válidos y se obtiene un resultado válido"() {
+
+        expect:
+        CargoTransaccion cargo = calculator.calculateCostoFinanciero(null, a, b, c, null)
+        result == cargo.montoCalculado
+
+        where:
+        a  | b  | c || result
+        1  | 1  | 0 || 1
+        50 | 50 | 0 || 2500
+        1  | 50 | 0 || 50
+        50 | 1  | 0 || 50
+    }
+
+    def "Se calcula un costo financiero para tasa directa con valores negativos y se tira una BusinessException"() {
+
+        when: "Se calcula el costo financiero"
+        calculator.calculateCostoFinanciero(null, importe, tasa, null)
+
+        then: "Se tira BusinessException"
+        thrown(expectedException)
+
+        where:
+        importe | tasa | expectedException
+        -2      | 5    | BusinessException
+        2       | -5   | BusinessException
+        -2      | -5   | BusinessException
+    }
+
+    def "Se calcula un costo financiero para tasa directa con valores válidos y se obtiene un resultado válido"() {
+
+        expect:
+        CargoTransaccion cargo = calculator.calculateCostoFinanciero(null, a, b, null)
+        result == cargo.montoCalculado
+
+        where:
+        a   | b   || result
+        100 | 1   || 1
+        1   | 100 || 1
+        100 | 100 || 100
+    }
+
+    def "Se calcula el valor aplicado con una regla de bonificación inválida y se tira una BusinessException"() {
+
+        when: "Se calcula el valos aplicado"
+        calculator.calculateValorAplicado(cargoTransaccion, regla)
+
+        then: "Se tira BusinessException"
+        thrown(expectedException)
+
+        where:
+        cargoTransaccion       | regla                                              | expectedException
+        new CargoTransaccion() | new ReglaBonificacion(bonificacionCFVendedor: 101) | BusinessException
+        new CargoTransaccion() | new ReglaBonificacion(bonificacionCFVendedor: -1)  | BusinessException
+        new CargoTransaccion() | null                                               | BusinessException
+    }
+
+    def "Se calcula el valor aplicado para valores válidos y se obtiene un resultado válido"() {
+
+        expect:
+        CargoTransaccion cargo = calculator.calculateValorAplicado(a, b)
+        result == cargo.valorAplicado
+
+        where:
+        a                      | b                                                  || result
+        new CargoTransaccion() | new ReglaBonificacion(bonificacionCFVendedor: 100) || 0
+        new CargoTransaccion() | new ReglaBonificacion(bonificacionCFVendedor: 50)  || 50
+        new CargoTransaccion() | new ReglaBonificacion(bonificacionCFVendedor: 0)   || 100
     }
 }

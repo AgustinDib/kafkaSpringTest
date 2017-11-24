@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import com.prismamp.todopago.model.Cargo;
 import com.prismamp.todopago.model.CargoCuenta;
+import com.prismamp.todopago.model.ReglaBonificacion;
 
 @Repository
 public class CargoRepository {
@@ -33,6 +34,22 @@ public class CargoRepository {
 	}
 
 	public CargoCuenta findCargoCuenta(Long cargo, Long cuenta) {
+		throw new NotImplementedException();
+	}
+
+	public ReglaBonificacion findReglaBonificacion(Long idPromotion) {
+		throw new NotImplementedException();
+	}
+
+	public Double findVolumenReglaPromocionBonificacion(Long idPromotion) {
+		throw new NotImplementedException();
+	}
+
+	public Double findVolumenReglaPromocionTasa(Long idPromotion) {
+		throw new NotImplementedException();
+	}
+
+	public Double findAcumuladorPromocionesMonto(Long idPromotion) {
 		throw new NotImplementedException();
 	}
 }
