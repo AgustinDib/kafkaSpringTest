@@ -19,6 +19,8 @@ public class Transaccion {
 
 	private List<CargoTransaccion> cargos;
 
+	private Long idPromotion;
+
 	public Transaccion() {
 		this.cargos = new ArrayList<CargoTransaccion>();
 	}
@@ -81,5 +83,13 @@ public class Transaccion {
 
 	public void addCargo(CargoTransaccion cargo) {
 		this.cargos.add(cargo);
+	}
+
+	public Long getIdPromotion() {
+		return idPromotion;
+	}
+
+	public void setIdPromotion(Long idPromotion) {
+		this.idPromotion = idPromotion;
 	}
 }
