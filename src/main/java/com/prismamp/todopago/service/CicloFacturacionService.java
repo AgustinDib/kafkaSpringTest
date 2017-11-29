@@ -25,8 +25,8 @@ public class CicloFacturacionService {
 	 * Devuelve el Rango de Ciclo de Facturación correspondiente al mes y año de la
 	 * transacción, basándose en los Ciclos de Facturación existentes.
 	 * 
-	 * @param creacion
-	 * @return RangoCicloFacturacion
+	 * @param creacion.
+	 * @return RangoCicloFacturacion.
 	 */
 	public RangoCicloFacturacion getRangoCicloFacturacion(Date creacion) {
 		if (null == creacion) {
