@@ -23,6 +23,13 @@ public class CargoService {
 	@Autowired
 	private CargoCalculator calculator;
 
+	/**
+	 * Calcula todos los cargos para la transacción y los agrega en la entidad
+	 * transacción.
+	 * 
+	 * @param transaccion.
+	 * @return Transaccion con los cargos por transacción calculados.
+	 */
 	public Transaccion calculateCargos(Transaccion transaccion) {
 		if (null == transaccion) {
 			throw new BusinessException("");
@@ -84,9 +91,5 @@ public class CargoService {
 		}
 		cargoTransaccion = calculator.calculateCostoFinanciero(cargoTransaccion, transaccion.getImporte(), tasa, bonificacion, monto);
 		return cargoTransaccion;
-	}
-
-	public List<Cargo> findAll() {
-		return repository.findAll();
 	}
 }
