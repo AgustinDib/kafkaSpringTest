@@ -4,7 +4,7 @@ public class CargoTransaccion {
 
 	private Long idCargo;
 
-	private Long idTransaccion;
+	private String idTransaccion;
 
 	private Double montoCalculado;
 
@@ -20,11 +20,11 @@ public class CargoTransaccion {
 		this.idCargo = idCargo;
 	}
 
-	public Long getIdTransaccion() {
+	public String getIdTransaccion() {
 		return idTransaccion;
 	}
 
-	public void setIdTransaccion(Long idTransaccion) {
+	public void setIdTransaccion(String idTransaccion) {
 		this.idTransaccion = idTransaccion;
 	}
 

@@ -1,5 +1,6 @@
 package com.prismamp.todopago.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import com.prismamp.todopago.calculator.CargoCalculator;
 import com.prismamp.todopago.exceptions.BusinessException;
 import com.prismamp.todopago.model.Cargo;
 import com.prismamp.todopago.model.CargoCuenta;
+import com.prismamp.todopago.model.CargoRequest;
 import com.prismamp.todopago.model.CargoTransaccion;
 import com.prismamp.todopago.model.ReglaBonificacion;
 import com.prismamp.todopago.model.Transaccion;
@@ -23,40 +25,46 @@ public class CargoService {
 	@Autowired
 	private CargoCalculator calculator;
 
-	public Transaccion calculateCargos(Transaccion transaccion) {
-		if (null == transaccion) {
+	public List<CargoTransaccion> calculateCargos(CargoRequest request) {
+		if (null == request) {
 			throw new BusinessException("");
 		}
-		List<Cargo> cargos = repository.findByBaseCalculoTransaccion(transaccion.getIdTipoCuenta(),
-				transaccion.getIdTipoMedioPago(), transaccion.getIdBaseCalculo());
+
+		List<CargoTransaccion> cargosTransaccion = new ArrayList<CargoTransaccion>();
+
+		Long idTipoMedioPago = repository.findIdTipoMedioPago(request.getIdMedioPago());
+
+		List<Cargo> cargos = repository.findByBaseCalculoTransaccion(request.getIdBaseCalculo(), request.getIdCuenta(),
+				idTipoMedioPago, request.getIdCanal());
 
 		for (Cargo cargo : cargos) {
 			CargoTransaccion cargoTransaccion = new CargoTransaccion();
-			CargoCuenta cargoCuenta = repository.findCargoCuenta(cargo.getId(), transaccion.getCuentaId());
+			CargoCuenta cargoCuenta = repository.findCargoCuenta(cargo.getId(), request.getIdCuenta());
 
 			if (!calculator.isCostoFinanciero(cargo)) {
 				cargoTransaccion = calculator.calculateRelacionVigente(cargoCuenta, cargo, cargoTransaccion);
-				cargoTransaccion = calculator.calculateMonto(cargoTransaccion, cargo, transaccion.getImporte());
+				cargoTransaccion = calculator.calculateMonto(cargoTransaccion, cargo, request.getImporte());
 			} else {
-				Long idPromotion = transaccion.getIdPromotion();
-
-				ReglaBonificacion regla = repository.findReglaBonificacion(idPromotion);
-				Double monto = repository.findAcumuladorPromocionesMonto(idPromotion);
-
-				if (!regla.isTasaDirecta()) {
-					cargoTransaccion = getCostoFinanciero(transaccion, cargoTransaccion, idPromotion, regla, monto);
-				} else {
-					cargoTransaccion = getCostoFinancieroTasaDirecta(transaccion, cargoTransaccion, idPromotion, regla, monto);
-				}
-				cargoTransaccion.setIdTipoAplicacion(cargoCuenta.getIdTipoAplicacion());
-				cargoTransaccion = calculator.calculateValorAplicado(cargoTransaccion, regla);
+//				Long idPromotion = transaccion.getIdPromotion();
+//
+//				ReglaBonificacion regla = repository.findReglaBonificacion(idPromotion);
+//				Double monto = repository.findAcumuladorPromocionesMonto(idPromotion);
+//
+//				if (!regla.isTasaDirecta()) {
+//					cargoTransaccion = getCostoFinanciero(transaccion, cargoTransaccion, idPromotion, regla, monto);
+//				} else {
+//					cargoTransaccion = getCostoFinancieroTasaDirecta(transaccion, cargoTransaccion, idPromotion, regla,
+//							monto);
+//				}
+//				cargoTransaccion.setIdTipoAplicacion(cargoCuenta.getIdTipoAplicacion());
+//				cargoTransaccion = calculator.calculateValorAplicado(cargoTransaccion, regla);
 			}
-
+//
 			cargoTransaccion.setIdCargo(cargo.getId());
-			cargoTransaccion.setIdTransaccion(transaccion.getId());
-			transaccion.addCargo(cargoTransaccion);
+			cargoTransaccion.setIdTransaccion(request.getIdTransaccion());
+			cargosTransaccion.add(cargoTransaccion);
 		}
-		return transaccion;
+		return cargosTransaccion;
 	}
 
 	private CargoTransaccion getCostoFinancieroTasaDirecta(Transaccion transaccion, CargoTransaccion cargoTransaccion,
@@ -82,7 +90,8 @@ public class CargoService {
 		} else {
 			bonificacion = regla.getBonificacionCFVendedor();
 		}
-		cargoTransaccion = calculator.calculateCostoFinanciero(cargoTransaccion, transaccion.getImporte(), tasa, bonificacion, monto);
+		cargoTransaccion = calculator.calculateCostoFinanciero(cargoTransaccion, transaccion.getImporte(), tasa,
+				bonificacion, monto);
 		return cargoTransaccion;
 	}
 

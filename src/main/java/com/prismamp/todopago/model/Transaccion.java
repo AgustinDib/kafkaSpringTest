@@ -5,11 +5,9 @@ import java.util.List;
 
 public class Transaccion {
 
-	private Long id;
+	private String id;
 
 	private Long cuentaId;
-
-	private Long idTipoCuenta;
 
 	private Long idTipoMedioPago;
 
@@ -25,11 +23,11 @@ public class Transaccion {
 		this.cargos = new ArrayList<CargoTransaccion>();
 	}
 
-	public Long getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
@@ -39,14 +37,6 @@ public class Transaccion {
 
 	public void setCuentaId(Long cuentaId) {
 		this.cuentaId = cuentaId;
-	}
-
-	public Long getIdTipoCuenta() {
-		return idTipoCuenta;
-	}
-
-	public void setIdTipoCuenta(Long idTipoCuenta) {
-		this.idTipoCuenta = idTipoCuenta;
 	}
 
 	public Long getIdTipoMedioPago() {

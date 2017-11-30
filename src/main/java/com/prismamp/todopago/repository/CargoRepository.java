@@ -27,10 +27,16 @@ public class CargoRepository {
 		throw new NotImplementedException();
 	}
 
-	public List<Cargo> findByBaseCalculoTransaccion(Long tipoCuenta, Long tipoMedioPago, Long baseCalculo) {
-		return findAll().stream().filter(p -> p.getIdTipoCuenta().equals(tipoCuenta))
+	public List<Cargo> findByBaseCalculoTransaccion(Long baseCalculo, Long cuenta, Long tipoMedioPago, Long canal) {
+		return findAll().stream().filter(p -> p.getIdBaseCalculo().equals(baseCalculo))
+				.filter(p -> p.getIdCuenta().equals(cuenta))
 				.filter(p -> p.getTipoMedioPago().getId().equals(tipoMedioPago))
-				.filter(p -> p.getIdBaseCalculo().equals(baseCalculo)).collect(Collectors.toList());
+				.filter(p -> null == p.getCanalAdhesion().getId() || p.getCanalAdhesion().getId().equals(canal))
+				.collect(Collectors.toList());
+	}
+
+	public Long findIdTipoMedioPago(Long medioPago) {
+		throw new NotImplementedException();
 	}
 
 	public CargoCuenta findCargoCuenta(Long cargo, Long cuenta) {

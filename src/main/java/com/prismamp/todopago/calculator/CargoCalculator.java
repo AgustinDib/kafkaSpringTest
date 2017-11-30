@@ -25,7 +25,7 @@ public class CargoCalculator {
 	public CargoTransaccion calculateRelacionVigente(CargoCuenta cargoCuenta, Cargo cargo,
 			CargoTransaccion cargoTransaccion) {
 
-		if (null != cargoCuenta && null != cargo) {
+		if (null != cargo) {
 			cargoTransaccion = checkCargoTransaccion(cargoTransaccion);
 			if (isRelacionVigente(cargoCuenta)) {
 				cargoTransaccion.setValorAplicado(cargoCuenta.getValor());
@@ -125,6 +125,9 @@ public class CargoCalculator {
 	}
 
 	private boolean isRelacionVigente(CargoCuenta cargoCuenta) {
+		if (null == cargoCuenta) {
+			return false;
+		}
 		Date inicioVigencia = cargoCuenta.getInicioVigencia();
 		Date finVigencia = cargoCuenta.getFinVigencia();
 		Date now = new Date();

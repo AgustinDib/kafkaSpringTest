@@ -8,6 +8,8 @@ public class Cargo {
 
 	private TipoMedioPago tipoMedioPago;
 
+	private Long idCuenta;
+
 	private Long idTipoCuenta;
 
 	private Long idBaseCalculo;
@@ -38,6 +40,14 @@ public class Cargo {
 
 	public void setTipoMedioPago(TipoMedioPago tipoMedioPago) {
 		this.tipoMedioPago = tipoMedioPago;
+	}
+
+	public Long getIdCuenta() {
+		return idCuenta;
+	}
+
+	public void setIdCuenta(Long idCuenta) {
+		this.idCuenta = idCuenta;
 	}
 
 	public Long getIdTipoCuenta() {
