@@ -1,5 +1,6 @@
 package com.prismamp.todopago.repository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,11 +28,13 @@ public class CargoRepository {
 		throw new NotImplementedException();
 	}
 
-	public List<Cargo> findByBaseCalculoTransaccion(Long baseCalculo, Long cuenta, Long tipoMedioPago, Long canal) {
+	public List<Cargo> findByBaseCalculoTransaccion(Long baseCalculo, Long cuenta, Long tipoMedioPago, Long canal, Date created) {
 		return findAll().stream().filter(p -> p.getIdBaseCalculo().equals(baseCalculo))
 				.filter(p -> p.getIdCuenta().equals(cuenta))
 				.filter(p -> p.getTipoMedioPago().getId().equals(tipoMedioPago))
 				.filter(p -> null == p.getCanalAdhesion().getId() || p.getCanalAdhesion().getId().equals(canal))
+				.filter(p -> p.getValor().getInicioVigencia().before(created))
+				.filter(p -> null == p.getValor().getFinVigencia() || p.getValor().getFinVigencia().after(created))
 				.collect(Collectors.toList());
 	}
 
