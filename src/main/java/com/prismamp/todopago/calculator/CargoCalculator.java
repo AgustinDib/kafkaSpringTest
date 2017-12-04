@@ -14,6 +14,12 @@ import com.prismamp.todopago.model.Valor;
 @Service
 public class CargoCalculator {
 
+	/**
+	 * Determina si un Cargo es o no de Costo Financiero.
+	 * 
+	 * @param cargo.
+	 * @return true si es Costo Financiero.
+	 */
 	public Boolean isCostoFinanciero(Cargo cargo) {
 		if (null != cargo && null != cargo.getTipoCargo()) {
 			return "COSTO_FIN_V".equals(cargo.getTipoCargo().getCodigo());
@@ -22,6 +28,16 @@ public class CargoCalculator {
 		}
 	}
 
+	/**
+	 * Calcula si el cargo de la transacción está vigente y en base a esa
+	 * información determina el valor aplicado y el tipo de aplicación del cargo por
+	 * transacción.
+	 * 
+	 * @param cargoCuenta.
+	 * @param cargo.
+	 * @param cargoTransaccion.
+	 * @return CargoTransaccion con valorAplicado y idTipoAplicacion seteados.
+	 */
 	public CargoTransaccion calculateRelacionVigente(CargoCuenta cargoCuenta, Cargo cargo,
 			CargoTransaccion cargoTransaccion) {
 
@@ -47,6 +63,15 @@ public class CargoCalculator {
 		}
 	}
 
+	/**
+	 * Calcula el monto para el cargo de la transacción dependiendo de si el valor
+	 * del cargo es fijo.
+	 * 
+	 * @param cargoTransaccion.
+	 * @param cargo.
+	 * @param importe.
+	 * @return CargoTransaccion con montoCalculado seteado.
+	 */
 	public CargoTransaccion calculateMonto(CargoTransaccion cargoTransaccion, Cargo cargo, Double importe) {
 		if (null != cargo && null != cargo.getValor()) {
 
@@ -66,6 +91,17 @@ public class CargoCalculator {
 		return cargoTransaccion;
 	}
 
+	/**
+	 * Calcula el costo financiero para el cargo de la transacción tomando en cuenta el
+	 * importe, la tasa, el monto y la bonificación.
+	 * 
+	 * @param cargoTransaccion.
+	 * @param importe.
+	 * @param tasa.
+	 * @param bonificacion.
+	 * @param monto.
+	 * @return CargoTransaccion con montoCalculado seteado.
+	 */
 	public CargoTransaccion calculateCostoFinanciero(CargoTransaccion cargoTransaccion, Double importe, Double tasa,
 			Double bonificacion, Double monto) {
 
@@ -83,6 +119,16 @@ public class CargoCalculator {
 		return cargoTransaccion;
 	}
 
+	/**
+	 * Calcula el costo financiero para el cargo de la transacción tomando en cuenta
+	 * el importe, la tasa y el monto.
+	 * 
+	 * @param cargoTransaccion.
+	 * @param importe.
+	 * @param tasa.
+	 * @param monto.
+	 * @return CargoTransaccion con montoCalculado seteado.
+	 */
 	public CargoTransaccion calculateCostoFinanciero(CargoTransaccion cargoTransaccion, Double importe, Double tasa, Double monto) {
 		if (importe < 0 || tasa < 0) {
 			throw new BusinessException("No se puede calcular el costo financiero con valores negativos.");
@@ -98,6 +144,14 @@ public class CargoCalculator {
 		return cargoTransaccion;
 	}
 
+	/**
+	 * Calcula el valor aplicado para el cargo de la transacción tomando en cuenta
+	 * la regla de bonificación, si la misma es nula el valor se setea en 0.
+	 * 
+	 * @param cargoTransaccion.
+	 * @param regla.
+	 * @return CargoTransaccion con valorAplicado seteado.
+	 */
 	public CargoTransaccion calculateValorAplicado(CargoTransaccion cargoTransaccion, ReglaBonificacion regla) {
 		if (null == regla) {
 			throw new BusinessException("No se puede calcular el valor aplicado para una Regla de Bonificación nula.");
@@ -107,7 +161,6 @@ public class CargoCalculator {
 		if (null == regla.getBonificacionCFVendedor()) {
 			cargoTransaccion.setValorAplicado(0d);
 		} else {
-			// TODO Tiene sentido validar el rango de valores para "BonificacionCFVendedor"?
 			Double bonificacion = regla.getBonificacionCFVendedor();
 			if (bonificacion < 0 || bonificacion > 100) {
 				throw new BusinessException("No se puede calcular el valor aplicado para una bonificacion menor que cero o mayor que 100.");

@@ -15,3 +15,6 @@ bin\windows\kafka-server-start.bat config\server.properties
 
 Para crear el topic donde se guardan y leen los mensajes, ejecutar:
 bin\windows\kafka-topics.bat --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic topicName
+
+Javadoc:
+Para generar los html desde Eclipse ir a Project > Generate Javadoc y no olvidar que sobre el proyecto del cual se genera la documentación, debe haber una tilde y no unn cuadrado, ya que la tilde genera para todo el proyecto, y el cuadrado para la clase particular que está seleccionada.
