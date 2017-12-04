@@ -12,6 +12,6 @@ public class CachingConfiguration {
 
 	@Bean
 	public CacheManager cacheManager() {
-		return new ConcurrentMapCacheManager("cargos");
+		return new ConcurrentMapCacheManager("cargos", "ciclosFacturacion");
 	}
 }
