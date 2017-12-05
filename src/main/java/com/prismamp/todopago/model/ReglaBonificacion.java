@@ -4,8 +4,6 @@ public class ReglaBonificacion {
 
 	private Boolean tasaDirecta;
 
-	private Double bonificacionCFVendedor;
-
 	private TasaMedioPago tasaMedioPago;
 
 	private Double tasaDirectaIngresada;
@@ -16,14 +14,6 @@ public class ReglaBonificacion {
 
 	public void setTasaDirecta(Boolean tasaDirecta) {
 		this.tasaDirecta = tasaDirecta;
-	}
-
-	public Double getBonificacionCFVendedor() {
-		return bonificacionCFVendedor;
-	}
-
-	public void setBonificacionCFVendedor(Double bonificacionCFVendedor) {
-		this.bonificacionCFVendedor = bonificacionCFVendedor;
 	}
 
 	public TasaMedioPago getTasaMedioPago() {

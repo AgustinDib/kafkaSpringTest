@@ -1,16 +1,12 @@
 package com.prismamp.todopago.model;
 
-import java.util.Date;
-
 public class CargoCuenta {
 
 	private Double valor;
-	
+
 	private Long idTipoAplicacion;
-	
-	private Date inicioVigencia;
-	
-	private Date finVigencia;
+
+	private String codigo;
 
 	public Double getValor() {
 		return valor;
@@ -28,19 +24,12 @@ public class CargoCuenta {
 		this.idTipoAplicacion = idTipoAplicacion;
 	}
 
-	public Date getInicioVigencia() {
-		return inicioVigencia;
+	public String getCodigo() {
+		return codigo;
 	}
 
-	public void setInicioVigencia(Date inicioVigencia) {
-		this.inicioVigencia = inicioVigencia;
+	public void setCodigo(String codigo) {
+		this.codigo = codigo;
 	}
 
-	public Date getFinVigencia() {
-		return finVigencia;
-	}
-
-	public void setFinVigencia(Date finVigencia) {
-		this.finVigencia = finVigencia;
-	}
 }

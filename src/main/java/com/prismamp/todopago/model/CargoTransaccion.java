@@ -4,13 +4,17 @@ public class CargoTransaccion {
 
 	private Long idCargo;
 
-	private String idTransaccion;
-
 	private Double montoCalculado;
 
 	private Double valorAplicado;
 
 	private Long idTipoAplicacion;
+
+	private String codigoAplicacion;
+
+	private String codigoTipoCargo;
+
+	private String idTransaccion;
 
 	public Long getIdCargo() {
 		return idCargo;
@@ -18,14 +22,6 @@ public class CargoTransaccion {
 
 	public void setIdCargo(Long idCargo) {
 		this.idCargo = idCargo;
-	}
-
-	public String getIdTransaccion() {
-		return idTransaccion;
-	}
-
-	public void setIdTransaccion(String idTransaccion) {
-		this.idTransaccion = idTransaccion;
 	}
 
 	public Double getMontoCalculado() {
@@ -51,4 +47,29 @@ public class CargoTransaccion {
 	public void setIdTipoAplicacion(Long idTipoAplicacion) {
 		this.idTipoAplicacion = idTipoAplicacion;
 	}
+
+	public String getCodigoAplicacion() {
+		return codigoAplicacion;
+	}
+
+	public void setCodigoAplicacion(String codigoAplicacion) {
+		this.codigoAplicacion = codigoAplicacion;
+	}
+
+	public String getCodigoTipoCargo() {
+		return codigoTipoCargo;
+	}
+
+	public void setCodigoTipoCargo(String codigoTipoCargo) {
+		this.codigoTipoCargo = codigoTipoCargo;
+	}
+
+	public String getIdTransaccion() {
+		return idTransaccion;
+	}
+
+	public void setIdTransaccion(String idTransaccion) {
+		this.idTransaccion = idTransaccion;
+	}
+
 }

@@ -6,7 +6,7 @@ public class Valor {
 
 	private Double valor;
 
-	private Tipo tipo;
+	private Long idTipoAplicacion;
 
 	private Date inicioVigencia;
 
@@ -20,12 +20,12 @@ public class Valor {
 		this.valor = valor;
 	}
 
-	public Tipo getTipo() {
-		return tipo;
+	public Long getIdTipoAplicacion() {
+		return idTipoAplicacion;
 	}
 
-	public void setTipo(Tipo tipo) {
-		this.tipo = tipo;
+	public void setIdTipoAplicacion(Long idTipoAplicacion) {
+		this.idTipoAplicacion = idTipoAplicacion;
 	}
 
 	public Date getInicioVigencia() {

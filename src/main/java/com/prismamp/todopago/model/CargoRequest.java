@@ -4,13 +4,13 @@ import java.util.Date;
 
 public class CargoRequest {
 
-	private Long idBaseCalculo;
+	private Long facilitiesPayments;
 
 	private Long idCuenta;
 
 	private Long idMedioPago;
 
-	private Long idCanal;
+	private String canal;
 
 	private Double importe;
 
@@ -20,12 +20,12 @@ public class CargoRequest {
 
 	private Date created;
 
-	public Long getIdBaseCalculo() {
-		return idBaseCalculo;
+	public Long getFacilitiesPayments() {
+		return facilitiesPayments;
 	}
 
-	public void setIdBaseCalculo(Long idBaseCalculo) {
-		this.idBaseCalculo = idBaseCalculo;
+	public void setFacilitiesPayments(Long facilitiesPayments) {
+		this.facilitiesPayments = facilitiesPayments;
 	}
 
 	public Long getIdCuenta() {
@@ -44,12 +44,12 @@ public class CargoRequest {
 		this.idMedioPago = idMedioPago;
 	}
 
-	public Long getIdCanal() {
-		return idCanal;
+	public String getCanal() {
+		return canal;
 	}
 
-	public void setIdCanal(Long idCanal) {
-		this.idCanal = idCanal;
+	public void setCanal(String canal) {
+		this.canal = canal;
 	}
 
 	public Double getImporte() {

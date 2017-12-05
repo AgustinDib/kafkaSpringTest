@@ -12,6 +12,7 @@ import com.prismamp.todopago.model.Cargo;
 import com.prismamp.todopago.model.CargoCuenta;
 import com.prismamp.todopago.model.CargoRequest;
 import com.prismamp.todopago.model.CargoTransaccion;
+import com.prismamp.todopago.model.PromocionResponse;
 import com.prismamp.todopago.model.ReglaBonificacion;
 import com.prismamp.todopago.repository.CargoRepository;
 
@@ -28,75 +29,91 @@ public class CargoService {
 		if (null == request) {
 			throw new BusinessException("");
 		}
+		Long idCanal = repository.findIdCanalByNombre(request.getCanal());
+		Long idBaseCalculo = findIdBaseCalculo(request.getFacilitiesPayments());
+
+		List<Cargo> defaultCargos = repository.findByDefault(request.getFacilitiesPayments(), request.getIdCuenta(),
+				request.getIdMedioPago(), idCanal, request.getCreated(), idBaseCalculo);
 
 		List<CargoTransaccion> cargosTransaccion = new ArrayList<CargoTransaccion>();
 
-		Long idTipoMedioPago = repository.findIdTipoMedioPago(request.getIdMedioPago());
-
-		List<Cargo> cargos = repository.findByBaseCalculoTransaccion(request.getIdBaseCalculo(), request.getIdCuenta(),
-				idTipoMedioPago, request.getIdCanal(), request.getCreated());
-
-		for (Cargo cargo : cargos) {
-			CargoTransaccion cargoTransaccion = new CargoTransaccion();
-			CargoCuenta cargoCuenta = repository.findCargoCuenta(cargo.getId(), request.getIdCuenta());
+		for (Cargo cargo : defaultCargos) {
+			CargoTransaccion cargoTransaccion = calculator.mapCargo(cargo, request.getIdTransaccion());
+			CargoCuenta cargoCuenta = repository.findCargoCuenta(cargo.getId(), request.getIdCuenta(), request.getCreated());
+			cargoTransaccion = calculator.mapCargoCuenta(cargoCuenta, cargoTransaccion);
 
 			if (!calculator.isCostoFinanciero(cargo)) {
-				cargoTransaccion = calculator.calculateRelacionVigente(cargoCuenta, cargo, cargoTransaccion);
 				cargoTransaccion = calculator.calculateMonto(cargoTransaccion, cargo, request.getImporte());
 			} else {
 				Long idPromotion = request.getIdPromotion();
 
 				ReglaBonificacion regla = repository.findReglaBonificacion(idPromotion);
-				Double monto = repository.findAcumuladorPromocionesMonto(idPromotion);
+				PromocionResponse promocion;
 
 				if (!regla.isTasaDirecta()) {
-					cargoTransaccion = getCostoFinanciero(request.getImporte(), cargoTransaccion, idPromotion, regla, monto);
+					promocion = repository.findPromocion(25l, idPromotion);
 				} else {
-					cargoTransaccion = getCostoFinancieroTasaDirecta(request.getImporte(), cargoTransaccion, idPromotion, regla,
-							monto);
+					promocion = repository.findPromocionTasaDirecta(25l, idPromotion);
 				}
-				if (null != cargoCuenta) {
-					cargoTransaccion.setIdTipoAplicacion(cargoCuenta.getIdTipoAplicacion());
-				}
-				cargoTransaccion = calculator.calculateValorAplicado(cargoTransaccion, regla);
-			}
+				promocion = calculator.setCodigoTipoPromocion(promocion);
 
-			cargoTransaccion.setIdCargo(cargo.getId());
-			cargoTransaccion.setIdTransaccion(request.getIdTransaccion());
+				if (null == idPromotion || 0 == idPromotion || 100 == promocion.getBonificacionCFVendedor()) {
+					cargoTransaccion.setMontoCalculado(0d);
+					cargoTransaccion.setValorAplicado(0d);
+				} else if (!"PROMO_CTAS".equals(promocion.getCodigo())) {
+					Double montoTotal = getMontoTotal(promocion.getCodigo(), request);
+
+					if (!regla.isTasaDirecta()) {
+						PromocionResponse promocionNotTasaDirecta = repository.findPromocionNotTasaDirecta(montoTotal, idPromotion);
+
+						promocion.setBonificacionCFVendedor(promocionNotTasaDirecta.getBonificacionCFVendedor());
+						promocion.setTasaDirecta(promocionNotTasaDirecta.getTasaDirecta());
+
+						cargoTransaccion = calculator.calculateMonto(cargoTransaccion, montoTotal, promocion);
+						cargoTransaccion = calculator.calculateValorAplicado(cargoTransaccion, promocion);
+					} else {
+						if (null == regla.getTasaDirectaIngresada()) {
+							Double tasaDirecta = repository.findVolumenReglaPromocionTasa(idPromotion, request.getImporte());
+							promocion.setTasaDirecta(tasaDirecta);
+						}
+
+						cargoTransaccion = calculator.calculateMontoTasaDirecta(cargoTransaccion, montoTotal, promocion.getTasaDirecta());
+						cargoTransaccion.setValorAplicado(promocion.getTasaDirecta());
+					}
+				}
+			}
 			cargosTransaccion.add(cargoTransaccion);
 		}
 		return cargosTransaccion;
 	}
 
-	private CargoTransaccion getCostoFinancieroTasaDirecta(Double importe, CargoTransaccion cargoTransaccion,
-			Long idPromotion, ReglaBonificacion regla, Double monto) {
-		Double tasa;
+	private Double getMontoTotal(String codigo, CargoRequest request) {
+		Double result;
 
-		if (null == regla.getTasaDirectaIngresada()) {
-			tasa = repository.findVolumenReglaPromocionTasa(idPromotion);
-		} else {
-			tasa = regla.getTasaDirectaIngresada();
+		switch (codigo) {
+		case "PROMO_VTA_MES_CTA":
+			result = repository.findAcumuladorPromocionesMonto(request.getCreated(), request.getIdCuenta(), request.getIdPromotion());
+			break;
+		case "PROMO_VTA_TOTAL_CTA":
+			result = repository.findAcumuladorPromocionesMonto(request.getIdCuenta(), request.getIdPromotion());
+			break;
+		case "PROMO_VTA_TOTAL":
+			result = repository.findAcumuladorPromocionesMonto(request.getIdPromotion());
+			break;
+		default:
+			throw new BusinessException("No se puede reconocer el código del tipo de promoción.");
 		}
-		cargoTransaccion = calculator.calculateCostoFinanciero(cargoTransaccion, importe, tasa, monto);
-		return cargoTransaccion;
+		return result;
 	}
 
-	private CargoTransaccion getCostoFinanciero(Double importe, CargoTransaccion cargoTransaccion, Long idPromotion,
-			ReglaBonificacion regla, Double monto) {
-		Double tasa;
-		Double bonificacion;
-		tasa = regla.getTasaMedioPago().getTasaDirecta();
-
-		if (null == regla.getBonificacionCFVendedor()) {
-			bonificacion = repository.findVolumenReglaPromocionBonificacion(idPromotion);
+	private Long findIdBaseCalculo(Long facilitiesPayments) {
+		String codigo;
+		if (1 == facilitiesPayments) {
+			codigo = "BC_TX_PAGO";
 		} else {
-			bonificacion = regla.getBonificacionCFVendedor();
+			codigo = "BC_TX_CUOTAS";
 		}
-		cargoTransaccion = calculator.calculateCostoFinanciero(cargoTransaccion, importe, tasa, bonificacion, monto);
-		return cargoTransaccion;
+		return repository.findIdTipoByCodigo(codigo);
 	}
 
-	public List<Cargo> findAll() {
-		return repository.findAll();
-	}
 }

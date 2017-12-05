@@ -6,7 +6,7 @@ public class Cargo {
 
 	private TipoCargo tipoCargo;
 
-	private TipoMedioPago tipoMedioPago;
+	private MedioPago medioPago;
 
 	private Long idCuenta;
 
@@ -14,9 +14,11 @@ public class Cargo {
 
 	private Long idBaseCalculo;
 
-	private CanalAdhesion canalAdhesion;
+	private Long idCanal;
 
 	private Valor valor;
+	
+	private Tipo tipoAplicacion;
 
 	public Long getId() {
 		return id;
@@ -34,12 +36,12 @@ public class Cargo {
 		this.tipoCargo = tipoCargo;
 	}
 
-	public TipoMedioPago getTipoMedioPago() {
-		return tipoMedioPago;
+	public MedioPago getMedioPago() {
+		return medioPago;
 	}
 
-	public void setTipoMedioPago(TipoMedioPago tipoMedioPago) {
-		this.tipoMedioPago = tipoMedioPago;
+	public void setMedioPago(MedioPago medioPago) {
+		this.medioPago = medioPago;
 	}
 
 	public Long getIdCuenta() {
@@ -66,12 +68,12 @@ public class Cargo {
 		this.idBaseCalculo = idBaseCalculo;
 	}
 
-	public CanalAdhesion getCanalAdhesion() {
-		return canalAdhesion;
+	public Long getIdCanal() {
+		return idCanal;
 	}
 
-	public void setCanalAdhesion(CanalAdhesion canalAdhesion) {
-		this.canalAdhesion = canalAdhesion;
+	public void setIdCanal(Long idCanal) {
+		this.idCanal = idCanal;
 	}
 
 	public Valor getValor() {
@@ -81,4 +83,13 @@ public class Cargo {
 	public void setValor(Valor valor) {
 		this.valor = valor;
 	}
+
+	public Tipo getTipoAplicacion() {
+		return tipoAplicacion;
+	}
+
+	public void setTipoAplicacion(Tipo tipoAplicacion) {
+		this.tipoAplicacion = tipoAplicacion;
+	}
+
 }

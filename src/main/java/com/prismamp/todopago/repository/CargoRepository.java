@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import com.prismamp.todopago.model.Cargo;
 import com.prismamp.todopago.model.CargoCuenta;
+import com.prismamp.todopago.model.PromocionResponse;
 import com.prismamp.todopago.model.ReglaBonificacion;
 
 @Repository
@@ -28,21 +29,53 @@ public class CargoRepository {
 		throw new NotImplementedException();
 	}
 
-	public List<Cargo> findByBaseCalculoTransaccion(Long baseCalculo, Long cuenta, Long tipoMedioPago, Long canal, Date created) {
-		return findAll().stream().filter(p -> p.getIdBaseCalculo().equals(baseCalculo))
-				.filter(p -> p.getIdCuenta().equals(cuenta))
-				.filter(p -> p.getTipoMedioPago().getId().equals(tipoMedioPago))
-				.filter(p -> null == p.getCanalAdhesion().getId() || p.getCanalAdhesion().getId().equals(canal))
+	public List<Cargo> findByDefault(Long facilitiesPayments, Long idCuenta, Long idMedioPago, Long idCanal, Date created, Long idBaseCalculo) {
+		return findAll().stream().filter(p -> idBaseCalculo == p.getIdBaseCalculo())
+				.filter(p -> idCuenta == p.getIdCuenta())
+				.filter(p -> idMedioPago == Long.parseLong(p.getMedioPago().getId()))
+				.filter(p -> idCanal == p.getIdCanal() || idCanal == 0 || idCanal == null)
 				.filter(p -> p.getValor().getInicioVigencia().before(created))
 				.filter(p -> null == p.getValor().getFinVigencia() || p.getValor().getFinVigencia().after(created))
 				.collect(Collectors.toList());
 	}
 
-	public Long findIdTipoMedioPago(Long medioPago) {
+	public Long findIdTipoByCodigo(String codigo) {
 		throw new NotImplementedException();
 	}
 
-	public CargoCuenta findCargoCuenta(Long cargo, Long cuenta) {
+	public Long findIdCanalByNombre(String nombre) {
+		throw new NotImplementedException();
+	}
+
+	public CargoCuenta findCargoCuenta(Long cargoId, Long cuentaId, Date created) {
+		throw new NotImplementedException();
+	}
+
+	public PromocionResponse findPromocion(Long idGrupoTipo, Long idPromotion) {
+		throw new NotImplementedException();
+	}
+
+	public PromocionResponse findPromocionTasaDirecta(Long idGrupoTipo, Long idPromotion) {
+		throw new NotImplementedException();
+	}
+
+	public Double findAcumuladorPromocionesMonto(Date created, Long idCuenta, Long idPromotion) {
+		throw new NotImplementedException();
+	}
+
+	public Double findAcumuladorPromocionesMonto(Long idCuenta, Long idPromotion) {
+		throw new NotImplementedException();
+	}
+
+	public Double findAcumuladorPromocionesMonto(Long idPromotion) {
+		throw new NotImplementedException();
+	}
+
+	public PromocionResponse findPromocionNotTasaDirecta(Double importe, Long idPromotion) {
+		throw new NotImplementedException();
+	}
+
+	public Long findIdTipoMedioPago(Long medioPago) {
 		throw new NotImplementedException();
 	}
 
@@ -54,11 +87,8 @@ public class CargoRepository {
 		throw new NotImplementedException();
 	}
 
-	public Double findVolumenReglaPromocionTasa(Long idPromotion) {
+	public Double findVolumenReglaPromocionTasa(Long idPromotion, Double importe) {
 		throw new NotImplementedException();
 	}
 
-	public Double findAcumuladorPromocionesMonto(Long idPromotion) {
-		throw new NotImplementedException();
-	}
 }
