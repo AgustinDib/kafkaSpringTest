@@ -29,11 +29,11 @@ public class CargoRepository {
 		throw new NotImplementedException();
 	}
 
-	public List<Cargo> findByDefault(Long facilitiesPayments, Long idCuenta, Long idMedioPago, Long idCanal, Date created, Long idBaseCalculo) {
+	public List<Cargo> findByDefault(Long idCuenta, Long idMedioPago, Long idCanal, Date created, Long idBaseCalculo) {
 		return findAll().stream().filter(p -> idBaseCalculo == p.getIdBaseCalculo())
-				.filter(p -> idCuenta == p.getIdCuenta())
-				.filter(p -> idMedioPago == Long.parseLong(p.getMedioPago().getId()))
-				.filter(p -> idCanal == p.getIdCanal() || idCanal == 0 || idCanal == null)
+				.filter(p -> idCuenta.equals(p.getIdCuenta()))
+				.filter(p -> idMedioPago.equals(Long.parseLong(p.getMedioPago().getId())))
+				.filter(p -> idCanal == null || idCanal.equals(p.getIdCanal()) || idCanal.equals(0))
 				.filter(p -> p.getValor().getInicioVigencia().before(created))
 				.filter(p -> null == p.getValor().getFinVigencia() || p.getValor().getFinVigencia().after(created))
 				.collect(Collectors.toList());

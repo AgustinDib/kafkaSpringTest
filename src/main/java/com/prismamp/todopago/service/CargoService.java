@@ -32,10 +32,10 @@ public class CargoService {
 		Long idCanal = repository.findIdCanalByNombre(request.getCanal());
 		Long idBaseCalculo = findIdBaseCalculo(request.getFacilitiesPayments());
 
-		List<Cargo> defaultCargos = repository.findByDefault(request.getFacilitiesPayments(), request.getIdCuenta(),
+		List<Cargo> defaultCargos = repository.findByDefault(request.getIdCuenta(),
 				request.getIdMedioPago(), idCanal, request.getCreated(), idBaseCalculo);
 
-		List<CargoTransaccion> cargosTransaccion = new ArrayList<CargoTransaccion>();
+		List<CargoTransaccion> cargosTransaccion = new ArrayList<>();
 
 		for (Cargo cargo : defaultCargos) {
 			CargoTransaccion cargoTransaccion = calculator.mapCargo(cargo, request.getIdTransaccion());
@@ -51,9 +51,9 @@ public class CargoService {
 				PromocionResponse promocion;
 
 				if (!regla.isTasaDirecta()) {
-					promocion = repository.findPromocion(25l, idPromotion);
+					promocion = repository.findPromocion(25L, idPromotion);
 				} else {
-					promocion = repository.findPromocionTasaDirecta(25l, idPromotion);
+					promocion = repository.findPromocionTasaDirecta(25L, idPromotion);
 				}
 				promocion = calculator.setCodigoTipoPromocion(promocion);
 
@@ -61,15 +61,15 @@ public class CargoService {
 					cargoTransaccion.setMontoCalculado(0d);
 					cargoTransaccion.setValorAplicado(0d);
 				} else if (!"PROMO_CTAS".equals(promocion.getCodigo())) {
-					Double montoTotal = getMontoTotal(promocion.getCodigo(), request);
 
 					if (!regla.isTasaDirecta()) {
+						Double montoTotal = getMontoTotal(promocion.getCodigo(), request);
 						PromocionResponse promocionNotTasaDirecta = repository.findPromocionNotTasaDirecta(montoTotal, idPromotion);
 
 						promocion.setBonificacionCFVendedor(promocionNotTasaDirecta.getBonificacionCFVendedor());
 						promocion.setTasaDirecta(promocionNotTasaDirecta.getTasaDirecta());
 
-						cargoTransaccion = calculator.calculateMonto(cargoTransaccion, montoTotal, promocion);
+						cargoTransaccion = calculator.calculateMonto(cargoTransaccion, request.getImporte(), promocion);
 						cargoTransaccion = calculator.calculateValorAplicado(cargoTransaccion, promocion);
 					} else {
 						if (null == regla.getTasaDirectaIngresada()) {
@@ -77,7 +77,7 @@ public class CargoService {
 							promocion.setTasaDirecta(tasaDirecta);
 						}
 
-						cargoTransaccion = calculator.calculateMontoTasaDirecta(cargoTransaccion, montoTotal, promocion.getTasaDirecta());
+						cargoTransaccion = calculator.calculateMontoTasaDirecta(cargoTransaccion, request.getImporte(), promocion.getTasaDirecta());
 						cargoTransaccion.setValorAplicado(promocion.getTasaDirecta());
 					}
 				}
@@ -115,5 +115,4 @@ public class CargoService {
 		}
 		return repository.findIdTipoByCodigo(codigo);
 	}
-
 }

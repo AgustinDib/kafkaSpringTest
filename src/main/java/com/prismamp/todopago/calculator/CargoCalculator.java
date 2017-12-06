@@ -20,20 +20,19 @@ public class CargoCalculator {
 	}
 
 	public CargoTransaccion calculateMonto(CargoTransaccion cargoTransaccion, Cargo cargo, Double importe) {
-		if (null != cargo && null != cargo.getValor()) {
+		if (null == cargo || null == cargo.getValor()) {
+			throw new BusinessException("No se puede calcular el monto ya que el cargo no es válido.");
+		} else if (null == importe) {
+			throw new BusinessException("No se puede calcular el monto ya que el cargo no es válido.");
+		}
+		cargoTransaccion = checkCargoTransaccion(cargoTransaccion);
 
-			cargoTransaccion = checkCargoTransaccion(cargoTransaccion);
-
-			if ("AP_PORCENTAJE".equalsIgnoreCase(cargoTransaccion.getCodigoAplicacion())) {
-				cargoTransaccion.setMontoCalculado(importe * (cargo.getValor().getValor() / 100));
-			} else if ("AP_FIJO".equalsIgnoreCase(cargoTransaccion.getCodigoAplicacion())) {
-				cargoTransaccion.setMontoCalculado(cargo.getValor().getValor());
-			} else {
-				cargoTransaccion.setMontoCalculado(0d);
-			}
-
+		if ("AP_PORCENTAJE".equalsIgnoreCase(cargoTransaccion.getCodigoAplicacion())) {
+			cargoTransaccion.setMontoCalculado(importe * (cargo.getValor().getValor() / 100));
+		} else if ("AP_FIJO".equalsIgnoreCase(cargoTransaccion.getCodigoAplicacion())) {
+			cargoTransaccion.setMontoCalculado(cargo.getValor().getValor());
 		} else {
-			throw new BusinessException("No se puede calcular el monto ya que el código de aplicación no es válido.");
+			cargoTransaccion.setMontoCalculado(0d);
 		}
 		return cargoTransaccion;
 	}
@@ -41,18 +40,22 @@ public class CargoCalculator {
 	public CargoTransaccion calculateMonto(CargoTransaccion cargoTransaccion, Double importe, PromocionResponse promocion) {
 		if (null == promocion || null == promocion.getTasaDirecta()) {
 			throw new BusinessException("No se puede calcular el monto sin tasa directa.");
+		} else if (null == promocion.getBonificacionCFVendedor()) {
+			promocion.setBonificacionCFVendedor(0d);
 		}
 		cargoTransaccion = checkCargoTransaccion(cargoTransaccion);
+		importe = checkDouble(importe);
 
-		Double montoCalculado = importe * (promocion.getTasaDirecta() / 100)
-				* (100 - promocion.getBonificacionCFVendedor() / 100);
-		cargoTransaccion.setMontoCalculado(montoCalculado);
+		Double monto = importe * (promocion.getTasaDirecta() / 100) * ((100 - promocion.getBonificacionCFVendedor()) / 100);
+		cargoTransaccion.setMontoCalculado(monto);
 
 		return cargoTransaccion;
 	}
 
 	public CargoTransaccion calculateMontoTasaDirecta(CargoTransaccion cargoTransaccion, Double importe, Double tasaDirecta) {
 		cargoTransaccion = checkCargoTransaccion(cargoTransaccion);
+		importe = checkDouble(importe);
+		tasaDirecta = checkDouble(tasaDirecta);
 
 		Double montoCalculado = importe * (tasaDirecta / 100);
 		cargoTransaccion.setMontoCalculado(montoCalculado);
@@ -65,37 +68,6 @@ public class CargoCalculator {
 			promocion.setCodigo("PROMO_CTAS");
 		}
 		return promocion;
-	}
-
-	public CargoTransaccion calculateCostoFinanciero(CargoTransaccion cargoTransaccion, Double importe, Double tasa, Double bonificacion, Double monto) {
-
-		if (importe < 0 || tasa < 0 || bonificacion < 0) {
-			throw new BusinessException("No se puede calcular el costo financiero con valores negativos.");
-		}
-		if (null == monto) {
-			monto = 0d;
-		}
-		cargoTransaccion = checkCargoTransaccion(cargoTransaccion);
-
-		Double montoCalculado = importe * tasa * ((100 - bonificacion) / 100);
-		cargoTransaccion.setMontoCalculado(montoCalculado + monto);
-
-		return cargoTransaccion;
-	}
-
-	public CargoTransaccion calculateCostoFinanciero(CargoTransaccion cargoTransaccion, Double importe, Double tasa, Double monto) {
-		if (importe < 0 || tasa < 0) {
-			throw new BusinessException("No se puede calcular el costo financiero con valores negativos.");
-		}
-		if (null == monto) {
-			monto = 0d;
-		}
-		cargoTransaccion = checkCargoTransaccion(cargoTransaccion);
-
-		Double montoCalculado = importe * (tasa / 100);
-		cargoTransaccion.setMontoCalculado(montoCalculado + monto);
-
-		return cargoTransaccion;
 	}
 
 	public CargoTransaccion calculateValorAplicado(CargoTransaccion cargoTransaccion, PromocionResponse promocion) {
@@ -124,7 +96,9 @@ public class CargoCalculator {
 		result.setIdCargo(cargo.getId());
 		result.setValorAplicado(cargo.getValor().getValor());
 		result.setIdTipoAplicacion(cargo.getValor().getIdTipoAplicacion());
-		result.setCodigoAplicacion(cargo.getTipoAplicacion().getCodigo());
+		if (null != cargo.getTipoAplicacion()) {
+			result.setCodigoAplicacion(cargo.getTipoAplicacion().getCodigo());
+		}
 		result.setCodigoTipoCargo(cargo.getTipoCargo().getCodigo());
 		result.setIdTransaccion(idTransaccion);
 
@@ -150,4 +124,10 @@ public class CargoCalculator {
 		return cargoTransaccion;
 	}
 
+	private Double checkDouble(Double value) {
+		if (null == value) {
+			value = 0d;
+		}
+		return value;
+	}
 }

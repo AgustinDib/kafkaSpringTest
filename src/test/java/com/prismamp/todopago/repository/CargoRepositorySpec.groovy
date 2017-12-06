@@ -16,12 +16,13 @@ class CargoRepositorySpec extends Specification {
     def "Búsqueda de Cargos por Base de Cálculo Transaccion"() {
 
         expect:
-        x == repository.findByBaseCalculoTransaccion(a, b, c, d, sdf.parse("2012-10-10 10:10:10")).size()
+        x == repository.findByDefault(a, b, c, sdf.parse("2016-08-12 12:20:24"), d).size()
 
         where:
-        a  | b | c | d || x
-        37 | 1 | 2 | 7 || 2
-        37 | 1 | 1 | 7 || 0
-        36 | 1 | 1 | 7 || 0
+        a     | b  | c    | d  || x
+        30487 | 42 | null | 37 || 1
+        30486 | 42 | null | 37 || 0
+        30487 | 41 | null | 37 || 0
+        30487 | 42 | null | 36 || 0
     }
 }

@@ -4,6 +4,7 @@ import com.prismamp.todopago.exceptions.BusinessException
 import com.prismamp.todopago.model.Cargo
 import com.prismamp.todopago.model.CargoCuenta
 import com.prismamp.todopago.model.CargoTransaccion
+import com.prismamp.todopago.model.PromocionResponse
 import com.prismamp.todopago.model.ReglaBonificacion
 import com.prismamp.todopago.model.Tipo
 import com.prismamp.todopago.model.TipoCargo
@@ -39,151 +40,107 @@ class CargoCalculatorSpec extends Specification {
         new Cargo(tipoCargo: new TipoCargo(codigo: ""))             || false
     }
 
-    def "Se calcula la vigencia de una relación con un Cargo o un CargoCuenta con valor null"() {
-
-        when: "Se quiere calcular la vigencia de una relación"
-        calculator.calculateRelacionVigente(cargoCuenta, cargo, null)
-
-        then: "Se tira BusinessException"
-        thrown(expectedException)
-
-        where:
-        cargoCuenta      | cargo       | expectedException
-        null             | new Cargo() | BusinessException
-        new CargoCuenta()| null        | BusinessException
-    }
-
-    def "Se calcula la vigencia de una relación con fechas vigentes y no vigentes"() {
-
-        given: "Un Cargo con Valor"
-        Cargo cargo = new Cargo(valor: new Valor(valor: 100, tipo: new Tipo(id: 666)))
-
-        when: "Se calcula la relación para una fecha vigente"
-        Date inicio = new Date(System.currentTimeMillis() - 3600 * 1000)
-        Date fin = new Date(System.currentTimeMillis() + 3600 * 1000)
-        CargoCuenta cargoCuenta = new CargoCuenta(valor: 50, idTipoAplicacion: 333, inicioVigencia: inicio, finVigencia: fin)
-
-        CargoTransaccion cargoTransaccion = calculator.calculateRelacionVigente(cargoCuenta, cargo, null)
-
-        then: "El Valor y el ID del tipo de aplicación se toman del CargoCuenta"
-        cargoTransaccion.idTipoAplicacion == 333 && cargoTransaccion.valorAplicado == 50
-
-        when: "Se calcula la relación para una fecha no vigente"
-        inicio = new Date(System.currentTimeMillis() + 3600 * 1000)
-        fin = new Date(System.currentTimeMillis() - 3600 * 1000)
-        cargoCuenta = new CargoCuenta(valor: 50, idTipoAplicacion: 333, inicioVigencia: inicio, finVigencia: fin)
-
-        cargoTransaccion = calculator.calculateRelacionVigente(cargoCuenta, cargo, null)
-
-        then: "El Valor y el ID del tipo de aplicación se toman del Cargo"
-        cargoTransaccion.idTipoAplicacion == 666 && cargoTransaccion.valorAplicado == 100
-    }
-
-    def "Se calcula el monto de un Cargo con valores null y se tira una BusinessException"() {
+    def "Se calcula el monto de un Cargo con valores inválidos y se tira una BusinessException"() {
 
         when: "Se calcula el monto de un Cargo"
-        calculator.calculateMonto(null, cargo, 0)
+        calculator.calculateMonto(null, cargo, importe)
 
         then: "Se tira BusinessException"
         thrown(expectedException)
 
         where:
-        cargo                                                     | expectedException
-        null                                                      | BusinessException
-        new Cargo(valor: null)                                    | BusinessException
-        new Cargo(valor: new Valor(tipo: new Tipo(codigo: "XXX")))| BusinessException
+        cargo                         | importe | expectedException
+        null                          | 100     | BusinessException
+        new Cargo()                   | 100     | BusinessException
+        new Cargo(valor: new Valor()) | null     | BusinessException
     }
 
     def "Se calcula el monto de un Cargo fijo y por porcentaje"() {
 
-        given: "Un Cargo con Valor con Tipo sin código"
-        Cargo cargo = new Cargo(valor: new Valor(valor: 300, tipo: new Tipo()))
+        given: "Un Cargo con Valor"
+        Cargo cargo = new Cargo(valor: new Valor(valor: 100))
 
         when: "Se calcula el monto de un cargo fijo"
-        cargo.valor.tipo.codigo = "AP_FIJO"
-        CargoTransaccion cargoTransaccion = calculator.calculateMonto(null, cargo, 200)
+        CargoTransaccion cargoTransaccion = new CargoTransaccion(codigoAplicacion: "AP_FIJO")
+        cargoTransaccion = calculator.calculateMonto(cargoTransaccion, cargo, 50)
 
         then: "El monto se obtiene directamente del Valor"
-        cargoTransaccion.montoCalculado == 300
+        cargoTransaccion.montoCalculado == 100
 
         when: "Se calcula el monto de un cargo por porcentaje"
-        cargo.valor.tipo.codigo = "AP_PORCENTAJE"
-        cargoTransaccion = calculator.calculateMonto(null, cargo, 200)
+        cargoTransaccion = new CargoTransaccion(codigoAplicacion: "AP_PORCENTAJE")
+        cargoTransaccion = calculator.calculateMonto(cargoTransaccion, cargo, 50)
 
         then: "El monto se obtiene a través de la fórmula importe * (valor/100)"
-        cargoTransaccion.montoCalculado == 600
+        cargoTransaccion.montoCalculado == 50
+
+        when: "Se calcula el monto de un cargo sin código de aplicación"
+        cargoTransaccion = new CargoTransaccion(codigoAplicacion: null)
+        cargoTransaccion = calculator.calculateMonto(cargoTransaccion, cargo, 50)
+
+        then: "El monto es 0"
+        cargoTransaccion.montoCalculado == 0
     }
 
-    def "Se calcular un costo financiero para tasa no directa con valores negativos y se tira una BusinessException"() {
+    def "Se calcula el monto de un CargoTransaccion no de Tasa Directa con valores inválidos y se tira una BusinessException"() {
 
-        when: "Se costo financiero"
-        calculator.calculateCostoFinanciero(null, importe, tasa, bonificacion, null)
+        when: "Se calcula el monto de un CargoTransaccion"
+        calculator.calculateMonto(null, 50, promocion)
 
         then: "Se tira BusinessException"
         thrown(expectedException)
 
         where:
-        importe | tasa  | bonificacion  | expectedException
-        2       | 5     | -5            | BusinessException
-        -2      | 5     | 5             | BusinessException
-        2       | -5    | 5             | BusinessException
-        -2      | -5    | -5            | BusinessException
+        promocion                     | expectedException
+        null                          | BusinessException
+        new PromocionResponse()       | BusinessException
     }
 
-    def "Se calcula un costo financiero para tasa no directa con valores válidos y se obtiene un resultado válido"() {
+    def "Se calcula el monto de un CargoTransaccion no de Tasa Directa"() {
+
+        given: "Una PromocionResponse válida"
+        PromocionResponse promocion = new PromocionResponse(bonificacionCFVendedor: 50, tasaDirecta: 50)
+
+        when: "Se calcula el monto con importe null"
+        CargoTransaccion cargoTransaccion  = calculator.calculateMonto(null, null, promocion)
+
+        then: "El monto se obtiene para un importe 0"
+        cargoTransaccion.montoCalculado == 0
+
+        when: "Se calcula el monto con importe 50"
+        cargoTransaccion  = calculator.calculateMonto(null, 50, promocion)
+
+        then: "El monto se obtiene para un importe 50"
+        cargoTransaccion.montoCalculado == 12.5
+    }
+
+    def "Se calcula el monto de un CargoTransaccion de Tasa Directa"() {
 
         expect:
-        CargoTransaccion cargo = calculator.calculateCostoFinanciero(null, a, b, c, null)
+        CargoTransaccion cargo = calculator.calculateMontoTasaDirecta(null, a, b)
         result == cargo.montoCalculado
 
         where:
-        a  | b  | c || result
-        1  | 1  | 0 || 1
-        50 | 50 | 0 || 2500
-        1  | 50 | 0 || 50
-        50 | 1  | 0 || 50
+        a    | b    || result
+        0    | 50   || 0
+        null | 50   || 0
+        50   | 0    || 0
+        50   | null || 0
+        50   | 50   || 25
     }
 
-    def "Se calcula un costo financiero para tasa directa con valores negativos y se tira una BusinessException"() {
-
-        when: "Se calcula el costo financiero"
-        calculator.calculateCostoFinanciero(null, importe, tasa, null)
-
-        then: "Se tira BusinessException"
-        thrown(expectedException)
-
-        where:
-        importe | tasa | expectedException
-        -2      | 5    | BusinessException
-        2       | -5   | BusinessException
-        -2      | -5   | BusinessException
-    }
-
-    def "Se calcula un costo financiero para tasa directa con valores válidos y se obtiene un resultado válido"() {
-
-        expect:
-        CargoTransaccion cargo = calculator.calculateCostoFinanciero(null, a, b, null)
-        result == cargo.montoCalculado
-
-        where:
-        a   | b   || result
-        100 | 1   || 1
-        1   | 100 || 1
-        100 | 100 || 100
-    }
-
-    def "Se calcula el valor aplicado con una regla de bonificación inválida y se tira una BusinessException"() {
+    def "Se calcula el valor aplicado con una promocion inválida y se tira una BusinessException"() {
 
         when: "Se calcula el valos aplicado"
-        calculator.calculateValorAplicado(cargoTransaccion, regla)
+        calculator.calculateValorAplicado(cargoTransaccion, promocion)
 
         then: "Se tira BusinessException"
         thrown(expectedException)
 
         where:
-        cargoTransaccion       | regla                                              | expectedException
-        new CargoTransaccion() | new ReglaBonificacion(bonificacionCFVendedor: 101) | BusinessException
-        new CargoTransaccion() | new ReglaBonificacion(bonificacionCFVendedor: -1)  | BusinessException
+        cargoTransaccion       | promocion                                          | expectedException
+        new CargoTransaccion() | new PromocionResponse(bonificacionCFVendedor: -1)  | BusinessException
+        new CargoTransaccion() | new PromocionResponse(bonificacionCFVendedor: 101) | BusinessException
         new CargoTransaccion() | null                                               | BusinessException
     }
 
@@ -195,8 +152,8 @@ class CargoCalculatorSpec extends Specification {
 
         where:
         a                      | b                                                  || result
-        new CargoTransaccion() | new ReglaBonificacion(bonificacionCFVendedor: 100) || 0
-        new CargoTransaccion() | new ReglaBonificacion(bonificacionCFVendedor: 50)  || 50
-        new CargoTransaccion() | new ReglaBonificacion(bonificacionCFVendedor: 0)   || 100
+        new CargoTransaccion() | new PromocionResponse(bonificacionCFVendedor: 100) || 0
+        new CargoTransaccion() | new PromocionResponse(bonificacionCFVendedor: 50)  || 50
+        new CargoTransaccion() | new PromocionResponse(bonificacionCFVendedor: 0)   || 100
     }
 }
