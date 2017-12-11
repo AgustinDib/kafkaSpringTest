@@ -12,6 +12,7 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.listener.AbstractMessageListenerContainer;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 
@@ -32,16 +33,17 @@ public class KafkaConsumerConfiguration {
 		props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
 		props.put(ConsumerConfig.GROUP_ID_CONFIG, "holaMundo");
 
-		return props;
-	}
+		props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
 
-	@Bean
-	public Map<String, Object> geetingConsumerConfigs() {
-		Map<String, Object> props = new HashMap<>();
-		props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
-		props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-		props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
-		props.put(ConsumerConfig.GROUP_ID_CONFIG, "holaMundo");
+//		Map<String, Object> propsMap = new HashMap<>();
+//        propsMap.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+//        propsMap.put(ConsumerConfig.GROUP_ID_CONFIG, "group1");
+//        propsMap.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
+//        //propsMap.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, 100);
+//        propsMap.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 6000);
+//        propsMap.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+//        propsMap.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+//        return new DefaultKafkaConsumerFactory<>(propsMap);
 
 		return props;
 	}
@@ -52,17 +54,29 @@ public class KafkaConsumerConfiguration {
 	}
 
 	@Bean
-	public ConsumerFactory<String, Greeting> greetingConsumerFactory() {
-		return new DefaultKafkaConsumerFactory<>(geetingConsumerConfigs(), new StringDeserializer(),
-				new JsonDeserializer<>(Greeting.class));
-	}
-
-	@Bean
 	public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> kafkaListenerContainerFactory() {
 		ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
 		factory.setConsumerFactory(consumerFactory());
+		factory.getContainerProperties().setAckMode(AbstractMessageListenerContainer.AckMode.MANUAL);
 
 		return factory;
+	}
+
+	@Bean
+	public Map<String, Object> geetingConsumerConfigs() {
+		Map<String, Object> props = new HashMap<>();
+		props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
+		props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+		props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
+		props.put(ConsumerConfig.GROUP_ID_CONFIG, "holaMundo");
+		
+		return props;
+	}
+
+	@Bean
+	public ConsumerFactory<String, Greeting> greetingConsumerFactory() {
+		return new DefaultKafkaConsumerFactory<>(geetingConsumerConfigs(), new StringDeserializer(),
+				new JsonDeserializer<>(Greeting.class));
 	}
 
 	@Bean
