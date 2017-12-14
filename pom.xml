@@ -18,6 +18,14 @@
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>
+		<repository>
+			<id>redbee-snapshot-dev</id>
+			<name>redbee-snapshot-dev</name>
+			<url>http://repo.dev.redbee.io/content/repositories/decidir-sdk/</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>		
 	</repositories>
 	<description>Demo project for connection with Kafka</description>
 
