@@ -8,6 +8,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.NotImplementedException;
+
 import com.prismamp.todopago.model.PlazoLiberacion;
 
 /**
@@ -15,8 +17,6 @@ import com.prismamp.todopago.model.PlazoLiberacion;
  *
  */
 public class CashoutRepository {
-	
-	
 	
 	
 	public List<PlazoLiberacion> findByCuentaAndTipoDeMedioDePagoAndCanal(Long cuenta, Long tipoMedioPago, Date created, Long canal) {
@@ -69,13 +69,13 @@ public class CashoutRepository {
 		
 	
 	
+	
 	/** 
 	 * @lastModification: Dec 5, 2017 - 12:19:51 PM
 	 * @returnType Collection<PlazoLiberacion>
 	 */
 	private Collection<PlazoLiberacion> findAll() {
-		// TODO Auto-generated method stub
-		return null;
+		throw new NotImplementedException();
 	}
 
 }
